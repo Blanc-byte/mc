@@ -1,0 +1,17 @@
+-isa ray mapili nga gender
+-Medical History TextField to TextArea
+-Category to Patient Type
+-Contact Filtering
+-Create Medical Profile Filtering
+-Create Medical Consultation Filtering
+-Add Category Searching
+
+
+
+
+
+
+
+
+- to be fix
+-merge prescription in consultation
