@@ -42,8 +42,8 @@
             <Button fx:id="btnDashboard" layoutY="191.0" mnemonicParsing="false" onAction="#Dashboard" prefHeight="50.0" prefWidth="214.0" text="Dashboard" />
             <Button fx:id="btnPatients" layoutX="-2.0" layoutY="241.0" mnemonicParsing="false" onAction="#Patients" prefHeight="50.0" prefWidth="214.0" text="Patients" />
             <Button fx:id="btnMC" layoutX="-2.0" layoutY="291.0" mnemonicParsing="false" onAction="#MedCon" prefHeight="50.0" prefWidth="214.0" text="Medication" />
-            <Button fx:id="btnMed" layoutY="341.0" mnemonicParsing="false" onAction="#Medicine" prefHeight="50.0" prefWidth="214.0" text="Medicine" />
-            <Button fx:id="btnMedInv" layoutY="391.0" mnemonicParsing="false" onAction="#MedInv" prefHeight="50.0" prefWidth="214.0" text="Medicine Inventory" />
+            <Button fx:id="btnMed" layoutY="391.0" mnemonicParsing="false" onAction="#Medicine" prefHeight="50.0" prefWidth="214.0" text="Medicine" />
+            <Button fx:id="btnMedInv" layoutY="341.0" mnemonicParsing="false" onAction="#MedInv" prefHeight="50.0" prefWidth="214.0" text="Medicine Inventory" />
             <Button fx:id="btnLogout" layoutX="29.0" layoutY="727.0" mnemonicParsing="false" onAction="#Logout" prefHeight="30.0" prefWidth="153.0" style="-fx-background-color: red;" text="Logout" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
