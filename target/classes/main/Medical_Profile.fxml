@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -11,14 +12,15 @@
 
 <AnchorPane id="AnchorPane" prefHeight="821.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Medical_ProfileController">
    <children>
-      <TableView fx:id="medicalProfileTable" layoutX="244.0" layoutY="85.0" prefHeight="510.0" prefWidth="951.0">
+      <TableView fx:id="medicalProfileTable" layoutX="244.0" layoutY="137.0" prefHeight="575.0" prefWidth="951.0">
         <columns>
-          <TableColumn fx:id="profileIdCol" prefWidth="136.0" text="Profile Id" />
-          <TableColumn fx:id="patientNameCol" prefWidth="154.0" text="Patient Name" />
-            <TableColumn fx:id="bloodTypeCol" prefWidth="170.0" text="Blood Type" />
-            <TableColumn fx:id="allergiesCol" prefWidth="144.0" text="Allergies" />
-            <TableColumn fx:id="conditionsCol" prefWidth="175.0" text="Conditions" />
-            <TableColumn fx:id="vaccinationsCol" prefWidth="171.0" text="Vaccinations" />
+          <TableColumn fx:id="profileIdCol" prefWidth="58.4000244140625" text="Profile Id" />
+          <TableColumn fx:id="patientNameCol" prefWidth="195.99996948242188" text="Patient Name" />
+            <TableColumn fx:id="bloodTypeCol" prefWidth="74.40011596679688" text="Blood Type" />
+            <TableColumn fx:id="allergiesCol" prefWidth="160.79998779296875" text="Allergies" />
+            <TableColumn fx:id="conditionsCol" prefWidth="167.199951171875" text="Conditions" />
+            <TableColumn fx:id="vaccinationsCol" prefWidth="140.0" text="Vaccinations" />
+            <TableColumn fx:id="dateCol" prefWidth="149.5999755859375" text="Date" />
         </columns>
       </TableView>
       <Label layoutX="244.0" layoutY="39.0" text="Medical Profile">
@@ -40,16 +42,17 @@
             </ImageView>
             <Button fx:id="btnDashboard" layoutY="191.0" mnemonicParsing="false" onAction="#Dashboard" prefHeight="50.0" prefWidth="214.0" text="Dashboard" />
             <Button fx:id="btnPatients" layoutX="-2.0" layoutY="241.0" mnemonicParsing="false" onAction="#Patients" prefHeight="50.0" prefWidth="214.0" text="Patients" />
-            <Button fx:id="btnMC" layoutX="-2.0" layoutY="291.0" mnemonicParsing="false" onAction="#MedCon" prefHeight="50.0" prefWidth="214.0" text="Medical Consultation" />
-            <Button fx:id="btnPresc" layoutX="-2.0" layoutY="340.0" mnemonicParsing="false" onAction="#Presc" prefHeight="50.0" prefWidth="214.0" text="Prescription" />
-            <Button fx:id="btnMed" layoutX="-2.0" layoutY="390.0" mnemonicParsing="false" onAction="#Medicine" prefHeight="50.0" prefWidth="214.0" text="Medicine" />
-            <Button fx:id="btnMedInv" layoutX="-2.0" layoutY="440.0" mnemonicParsing="false" onAction="#MedInv" prefHeight="50.0" prefWidth="214.0" text="Medicine Inventory" />
+            <Button fx:id="btnMP" layoutX="-4.0" layoutY="341.0" mnemonicParsing="false" onAction="#MedCon" prefHeight="50.0" prefWidth="214.0" text="Prescription" />
+            <Button fx:id="btnMed" layoutX="-2.0" layoutY="441.0" mnemonicParsing="false" onAction="#Medicine" prefHeight="50.0" prefWidth="214.0" text="Dispense Medicine" />
+            <Button fx:id="btnMedInv" layoutX="-2.0" layoutY="391.0" mnemonicParsing="false" onAction="#MedInv" prefHeight="50.0" prefWidth="214.0" text="Medicine Inventory" />
             <Button fx:id="btnLogout" layoutX="29.0" layoutY="727.0" mnemonicParsing="false" onAction="#Logout" prefHeight="30.0" prefWidth="153.0" style="-fx-background-color: red;" text="Logout" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
+            <Button fx:id="btnMP" layoutX="-3.0" layoutY="291.0" mnemonicParsing="false" onAction="#MedProf" prefHeight="50.0" prefWidth="214.0" text="Profiles" />
          </children>
       </AnchorPane>
+      <TextField fx:id="search" layoutX="244.0" layoutY="102.0" onKeyReleased="#onSearchKeyReleased" prefHeight="26.0" prefWidth="330.0" />
    </children>
 </AnchorPane>

@@ -10,16 +10,18 @@ public class MedicalProfile {
     private String allergies;
     private String preExistingConditions;
     private String vaccinations;
+    private String createdAt;
 
     // Constructor
     public MedicalProfile(int profileId, String patientName, String bloodType, String allergies, 
-                          String preExistingConditions, String vaccinations) {
+                          String preExistingConditions, String vaccinations, String created_at) {
         this.profileId = profileId;
         this.patientName = patientName;
         this.bloodType = bloodType;
         this.allergies = allergies;
         this.preExistingConditions = preExistingConditions;
         this.vaccinations = vaccinations;
+        this.createdAt = created_at;
     }
 
     // Getters
@@ -45,5 +47,9 @@ public class MedicalProfile {
 
     public String getVaccinations() {
         return vaccinations;
+    }
+    
+    public String getCreatedAt() {
+        return createdAt;
     }
 }

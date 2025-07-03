@@ -29,6 +29,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -138,6 +139,30 @@ public class MedicineController implements Initializable {
 
         // Load data from the database
         loadMedicineData();
+        
+        MedicineTable.setRowFactory(tv -> new TableRow<Medicine>() {
+            @Override
+            protected void updateItem(Medicine medicine, boolean empty) {
+                super.updateItem(medicine, empty);
+
+                if (medicine == null || empty) {
+                    setStyle("");
+                } else {
+                    LocalDate expiryDate = medicine.getExpiryDate().toLocalDate();
+                    LocalDate today = LocalDate.now();
+
+                    if (expiryDate.isBefore(today)) {
+                        // Expired = red
+                        setStyle("-fx-background-color: #ff4d4d;"); // strong red
+                    } else if (!expiryDate.isAfter(today.plusDays(7))) {
+                        // Expiring within 7 days = light red
+                        setStyle("-fx-background-color: #ffcccc;"); // light red
+                    } else {
+                        setStyle(""); // No highlight if not expiring soon
+                    }
+                }
+            }
+        });
 
         // Add dynamic search
         searchtf.textProperty().addListener((observable, oldValue, newValue) -> {

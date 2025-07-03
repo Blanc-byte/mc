@@ -11,6 +11,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -18,12 +22,22 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 
 public class MedConController implements Initializable {
 
@@ -148,6 +162,87 @@ public class MedConController implements Initializable {
                 successAlert.setHeaderText(null);
                 successAlert.setContentText("Prescription successfully created for Consultation ID: " + selectedConsultation.getConsultationId());
                 successAlert.showAndWait();
+                int patientId = selectedConsultation.getConsultationId(); 
+                
+                Map<String, Integer> medicineMap = new HashMap<>();
+                List<String> medicineNames = new ArrayList<>();
+
+                // Load all medicine names with their IDs
+                String medQuery = "SELECT medicine_id, name FROM medicine";
+                try (PreparedStatement stmt = connection.prepareStatement(medQuery);
+                     ResultSet rs = stmt.executeQuery()) {
+
+                    while (rs.next()) {
+                        int medId = rs.getInt("medicine_id");
+                        String medName = rs.getString("name");
+                        medicineMap.put(medName, medId);
+                        medicineNames.add(medName);
+                        loadPrescriptions();
+                    }
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+//                    showError("Failed to load medicines.");
+                    return;
+                }
+
+                boolean giveMore = true;
+
+                while (giveMore) {
+                    // Show ChoiceDialog with medicine names
+                    ChoiceDialog<String> medDialog = new ChoiceDialog<>(medicineNames.get(0), medicineNames);
+                    medDialog.setTitle("Give Medicine");
+                    medDialog.setHeaderText("Select a medicine to give to the patient:");
+                    medDialog.setContentText("Medicine:");
+
+                    Optional<String> selectedName = medDialog.showAndWait();
+                    if (selectedName.isEmpty()) break;
+
+                    String medicineName = selectedName.get();
+                    int medicineId = medicineMap.get(medicineName);
+
+                    // Ask for quantity
+                    TextInputDialog qtyDialog = new TextInputDialog();
+                    qtyDialog.setTitle("Quantity");
+                    qtyDialog.setHeaderText("Enter quantity for: " + medicineName);
+                    qtyDialog.setContentText("Quantity:");
+
+                    Optional<String> qtyResult = qtyDialog.showAndWait();
+                    if (qtyResult.isEmpty()) break;
+
+                    int quantity;
+                    try {
+                        quantity = Integer.parseInt(qtyResult.get());
+                    } catch (NumberFormatException e) {
+//                        showError("Invalid quantity.");
+                        break;
+                    }
+
+                    // Insert into givemed
+                    String giveQuery = "INSERT INTO givemed (patient_id, medicine_id, quantity, give_date) VALUES (?, ?, ?, NOW())";
+                    try (PreparedStatement giveStmt = connection.prepareStatement(giveQuery)) {
+                        giveStmt.setInt(1, selectedConsultation.getConsultationId());
+                        giveStmt.setInt(2, medicineId);
+                        giveStmt.setInt(3, quantity);
+                        giveStmt.executeUpdate();
+                        System.out.println(""+giveStmt);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        break;
+                    }
+
+                    // Ask if user wants to give another
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Give Another?");
+                    confirm.setHeaderText("Do you want to give another medicine?");
+                    confirm.setContentText(null);
+                    confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+                    Optional<ButtonType> result = confirm.showAndWait();
+                    giveMore = result.isPresent() && result.get() == ButtonType.YES;
+                }
+
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -234,7 +329,92 @@ public class MedConController implements Initializable {
         
         // Load prescriptions into the table
         loadPrescriptions();
+        
+        PrescTbale.setRowFactory(tv -> {
+            TableRow<Prescription> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Prescription selected = row.getItem();
+                    showPrescriptionReceipt(selected);
+                }
+            });
+            return row;
+        });
+
     }
+    private void showPrescriptionReceipt(Prescription prescription) {
+        VBox contentBox = new VBox(10);
+        contentBox.setPadding(new Insets(10));
+
+        // Header section
+        Label header = new Label("🧾 AMedic Health Center - Prescription Receipt");
+        header.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
+        Label patient = new Label("👤 Patient: " + prescription.getPatientName());
+        Label consultDate = new Label("📅 Consultation Date: " + prescription.getConsultationDate());
+        Label consultType = new Label("🩺 Type: " + prescription.getConsultationType());
+        Label diagnosis = new Label("🧠 Diagnosis: " + prescription.getDiagnosis());
+
+        Label prescriptionInfo = new Label("📌 Dosage: " + prescription.getDosage()
+                + "\n📌 Frequency: " + prescription.getFrequency()
+                + "\n📌 Duration: " + prescription.getDuration());
+
+        contentBox.getChildren().addAll(header, patient, consultDate, consultType, diagnosis, prescriptionInfo);
+
+        // Section title
+        Label givenLabel = new Label("💊 Medicines Given:");
+        givenLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+        contentBox.getChildren().add(givenLabel);
+
+        String query = "SELECT gm.quantity, gm.give_date, m.name, m.brand FROM givemed gm JOIN medicine m ON gm.medicine_id = m.medicine_id WHERE gm.patient_id IN (SELECT id FROM patients WHERE CONCAT(first_name, ' ', last_name) = ?) ORDER BY gm.give_date DESC";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", "");
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, prescription.getPatientName());
+            ResultSet rs = stmt.executeQuery();
+
+            boolean found = false;
+            while (rs.next()) {
+                found = true;
+                String medName = rs.getString("name");
+                String brand = rs.getString("brand");
+                int qty = rs.getInt("quantity");
+                String giveDate = rs.getString("give_date");
+
+                VBox medBox = new VBox(2);
+                medBox.setStyle("-fx-background-color: #f4f4f4; -fx-padding: 10; -fx-border-color: #ccc;");
+                medBox.getChildren().addAll(
+                    new Label("🔹 " + medName + " (Brand: " + brand + ")"),
+                    new Label("   Quantity: " + qty),
+                    new Label("   Given on: " + giveDate)
+                );
+
+                contentBox.getChildren().add(medBox);
+            }
+
+            if (!found) {
+                Label noMeds = new Label("No medicines were given for this patient.");
+                noMeds.setStyle("-fx-font-style: italic;");
+                contentBox.getChildren().add(noMeds);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            contentBox.getChildren().add(new Label("⚠ Error retrieving medicine data."));
+        }
+
+        // Scrollable container
+        ScrollPane scrollPane = new ScrollPane(contentBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefSize(500, 500);
+
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Prescription Receipt");
+        dialog.getDialogPane().setContent(scrollPane);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.showAndWait();
+    }
+
 
     private void loadConsultations() {
         ObservableList<MedicalConsultation> consultations = FXCollections.observableArrayList();

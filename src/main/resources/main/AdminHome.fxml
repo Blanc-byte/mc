@@ -22,57 +22,47 @@
             <Font name="System Italic" size="24.0" />
          </font>
       </Label>
-      <TableView fx:id="table" layoutX="260.0" layoutY="113.0" prefHeight="200.0" prefWidth="893.0">
+      <TableView fx:id="table" layoutX="224.0" layoutY="115.0" prefHeight="378.0" prefWidth="991.0">
         <columns>
-          <TableColumn fx:id="PatientId" prefWidth="81.0" text="Patients_id" />
-          <TableColumn fx:id="Id" prefWidth="38.0" text="Id" />
-            <TableColumn fx:id="Fname" prefWidth="101.0" text="First Name" />
-            <TableColumn fx:id="Lname" prefWidth="87.0" text="Last Name" />
-            <TableColumn fx:id="Gender" prefWidth="57.0" text="Gender" />
-            <TableColumn fx:id="DateOfBirth" prefWidth="108.0" text="Date of Birth" />
-            <TableColumn fx:id="Age" prefWidth="44.0" text="Age" />
-            <TableColumn fx:id="Category" prefWidth="81.0" text="Patient Type" />
-            <TableColumn fx:id="Contact" prefWidth="73.0" text="Contact" />
-            <TableColumn fx:id="MedcialHistory" prefWidth="121.0" text="Medical History" />
-            <TableColumn fx:id="HealthStatus" prefWidth="101.0" text="Health Status" />
+          <TableColumn fx:id="PatientId" prefWidth="66.39999389648438" text="Patients_id" />
+          <TableColumn fx:id="Id" prefWidth="29.600006103515625" text="Id" />
+            <TableColumn fx:id="Fname" prefWidth="68.79998779296875" text="First Name" />
+            <TableColumn fx:id="Lname" prefWidth="67.20001220703125" text="Last Name" />
+            <TableColumn fx:id="Gender" prefWidth="47.20001220703125" text="Gender" />
+            <TableColumn fx:id="DateOfBirth" prefWidth="79.20001220703125" text="Date of Birth" />
+            <TableColumn fx:id="Age" prefWidth="29.5999755859375" text="Age" />
+            <TableColumn fx:id="Category" prefWidth="75.20001220703125" text="Patient Type" />
+            <TableColumn fx:id="Contact" prefWidth="89.5999755859375" text="Contact" />
+            <TableColumn fx:id="MedcialHistory" prefWidth="101.60003662109375" text="Medical History" />
+            <TableColumn fx:id="HealthStatus" prefWidth="90.4000244140625" text="Health Status" />
+            <TableColumn fx:id="remarks" prefWidth="110.39996337890625" text="Remarks" />
+            <TableColumn fx:id="dateAdded" prefWidth="128.7999267578125" text="Date Added" />
         </columns>
       </TableView>
       <TextField fx:id="searchTF" layoutX="915.0" layoutY="80.0" prefHeight="26.0" prefWidth="178.0" promptText="Search..." />
       <Button fx:id="btnClear" layoutX="1082.0" layoutY="49.0" mnemonicParsing="false" onAction="#Clear" prefHeight="25.0" prefWidth="71.0" text="Clear" />
       <Button fx:id="btnSearch" layoutX="1082.0" layoutY="80.0" mnemonicParsing="false" onAction="#Search" prefHeight="25.0" prefWidth="71.0" text="Search" />
-      <TextField fx:id="pIdTF" layoutX="260.0" layoutY="609.0" promptText="Patient id" />
-      <TextField fx:id="FnameTF" layoutX="260.0" layoutY="640.0" promptText="First Name" />
-      <TextField fx:id="LnameTF" layoutX="260.0" layoutY="669.0" promptText="Last Name" />
-      <TextField fx:id="AgeTF" layoutX="429.0" layoutY="640.0" promptText="Age" />
-      <TextField fx:id="HealthStatsTF" layoutX="597.0" layoutY="609.0" promptText="Health Status" />
-      <TextField fx:id="contactTF" layoutX="260.0" layoutY="700.0" promptText="Contact" />
-      <ComboBox fx:id="CategorycomboBox" layoutX="429.0" layoutY="669.0" prefWidth="150.0" promptText="Patient Type" />
-      <DatePicker fx:id="DoBTF" layoutX="430.0" layoutY="609.0" prefHeight="25.0" prefWidth="149.0" promptText="choose date" />
-      <CheckBox fx:id="Malechkbx" layoutX="430.0" layoutY="704.0" mnemonicParsing="false" text="Male" />
-      <CheckBox fx:id="Femalechkbx" layoutX="495.0" layoutY="704.0" mnemonicParsing="false" text="Female" />
-      <Button fx:id="btnDelete" layoutX="903.0" layoutY="604.0" mnemonicParsing="false" onAction="#Delete" prefHeight="35.0" prefWidth="117.0" text="Delete" />
-      <Button fx:id="btnEdit" layoutX="773.0" layoutY="647.0" mnemonicParsing="false" onAction="#Edit" prefHeight="35.0" prefWidth="117.0" text="Edit" />
-      <Button fx:id="btnAdd" layoutX="773.0" layoutY="604.0" mnemonicParsing="false" onAction="#Add" prefHeight="35.0" prefWidth="117.0" text="Add" />
-      <Button fx:id="btnSave" layoutX="903.0" layoutY="647.0" mnemonicParsing="false" onAction="#Save" prefHeight="35.0" prefWidth="117.0" text="Save Edit" />
+      <TextField fx:id="pIdTF" layoutX="259.0" layoutY="537.0" promptText="Patient id" />
+      <TextField fx:id="FnameTF" layoutX="259.0" layoutY="568.0" promptText="First Name" />
+      <TextField fx:id="LnameTF" layoutX="259.0" layoutY="597.0" promptText="Last Name" />
+      <TextField fx:id="HealthStatsTF" layoutX="429.0" layoutY="567.0" promptText="Health Status" />
+      <TextField fx:id="contactTF" layoutX="259.0" layoutY="628.0" promptText="Contact" />
+      <ComboBox fx:id="CategorycomboBox" layoutX="428.0" layoutY="597.0" prefWidth="150.0" promptText="Patient Type" />
+      <DatePicker fx:id="DoBTF" layoutX="429.0" layoutY="537.0" prefHeight="25.0" prefWidth="149.0" promptText="choose date" />
+      <CheckBox fx:id="Malechkbx" layoutX="429.0" layoutY="632.0" mnemonicParsing="false" text="Male" />
+      <CheckBox fx:id="Femalechkbx" layoutX="494.0" layoutY="632.0" mnemonicParsing="false" text="Female" />
+      <Button fx:id="btnDelete" layoutX="902.0" layoutY="532.0" mnemonicParsing="false" onAction="#Delete" prefHeight="35.0" prefWidth="117.0" text="Delete" />
+      <Button fx:id="btnEdit" layoutX="772.0" layoutY="575.0" mnemonicParsing="false" onAction="#Edit" prefHeight="35.0" prefWidth="117.0" text="Edit" />
+      <Button fx:id="btnAdd" layoutX="772.0" layoutY="532.0" mnemonicParsing="false" onAction="#Add" prefHeight="35.0" prefWidth="117.0" text="Add" />
+      <Button fx:id="btnSave" layoutX="902.0" layoutY="575.0" mnemonicParsing="false" onAction="#Save" prefHeight="35.0" prefWidth="117.0" text="Save Edit" />
       <Button fx:id="btnMp" layoutX="260.0" layoutY="49.0" mnemonicParsing="false" onAction="#MedicalProfile" prefHeight="25.0" prefWidth="166.0" text="Create Medical Profile" />
       <Button fx:id="btnMedC" layoutX="260.0" layoutY="81.0" mnemonicParsing="false" onAction="#MedicalConsult" prefHeight="25.0" prefWidth="166.0" text="Create Medical Consultation" />
-      <TextArea fx:id="MedhisTF" layoutX="597.0" layoutY="637.0" prefHeight="90.0" prefWidth="150.0" promptText="Medical History" />
-      <TableView fx:id="medicalProfileTable" layoutX="260.0" layoutY="337.0" prefHeight="250.0" prefWidth="894.0">
-         <columns>
-            <TableColumn fx:id="profileIdCol" prefWidth="60.799957275390625" text="Profile Id" />
-            <TableColumn fx:id="patientNameCol" prefWidth="206.39999389648438" text="Patient Name" />
-            <TableColumn fx:id="bloodTypeCol" prefWidth="80.800048828125" text="Blood Type" />
-            <TableColumn fx:id="allergiesCol" prefWidth="167.20001220703125" text="Allergies" />
-            <TableColumn fx:id="conditionsCol" prefWidth="185.5999755859375" text="Conditions" />
-            <TableColumn fx:id="vaccinationsCol" prefWidth="182.39996337890625" text="Vaccinations" />
-         </columns>
-      </TableView>
-      <Line endX="805.0" layoutX="384.0" layoutY="326.0" startX="-146.3999786376953" />
-      <Line endX="805.0" layoutX="384.0" layoutY="598.0" startX="-143.2000274658203" />
-      <Label fx:id="FacultyCount" layoutX="1045.0" layoutY="613.0" prefHeight="26.0" prefWidth="110.0" text="Label" />
-      <Label fx:id="StudentCount" layoutX="1045.0" layoutY="639.0" prefHeight="26.0" prefWidth="110.0" text="Label" />
-      <Label fx:id="StaffCount" layoutX="1045.0" layoutY="668.0" prefHeight="26.0" prefWidth="110.0" text="Label" />
-      <Label fx:id="Overall" layoutX="1045.0" layoutY="699.0" prefHeight="26.0" prefWidth="110.0" text="Label" />
+      <TextArea fx:id="MedhisTF" layoutX="596.0" layoutY="538.0" prefHeight="50.0" prefWidth="150.0" promptText="Medical History" />
+      <Line endX="805.0" layoutX="383.0" layoutY="512.0" startX="-146.3999786376953" />
+      <Label fx:id="FacultyCount" layoutX="1044.0" layoutY="541.0" prefHeight="26.0" prefWidth="110.0" text="Label" />
+      <Label fx:id="StudentCount" layoutX="1044.0" layoutY="567.0" prefHeight="26.0" prefWidth="110.0" text="Label" />
+      <Label fx:id="StaffCount" layoutX="1044.0" layoutY="596.0" prefHeight="26.0" prefWidth="110.0" text="Label" />
+      <Label fx:id="Overall" layoutX="1044.0" layoutY="627.0" prefHeight="26.0" prefWidth="110.0" text="Label" />
       <AnchorPane prefHeight="821.0" prefWidth="193.0" style="-fx-background-color: pink;">
          <children>
             <Label layoutX="14.0" layoutY="24.0" text="Welcome Admin">
@@ -87,15 +77,17 @@
             </ImageView>
             <Button fx:id="btnDashboard" layoutY="191.0" mnemonicParsing="false" onAction="#Dashboard" prefHeight="50.0" prefWidth="214.0" text="Dashboard" />
             <Button fx:id="btnPatients" layoutX="-2.0" layoutY="241.0" mnemonicParsing="false" onAction="#Patients" prefHeight="50.0" prefWidth="214.0" text="Patients" />
-            <Button fx:id="btnMC" layoutX="-2.0" layoutY="291.0" mnemonicParsing="false" onAction="#MedCon" prefHeight="50.0" prefWidth="214.0" text="Medication" />
-            <Button fx:id="btnMed" layoutY="391.0" mnemonicParsing="false" onAction="#Medicine" prefHeight="50.0" prefWidth="214.0" text="Medicine" />
-            <Button fx:id="btnMedInv" layoutY="341.0" mnemonicParsing="false" onAction="#MedInv" prefHeight="50.0" prefWidth="214.0" text="Medicine Inventory" />
+            <Button fx:id="btnMP" layoutX="-4.0" layoutY="341.0" mnemonicParsing="false" onAction="#MedCon" prefHeight="50.0" prefWidth="214.0" text="Prescription" />
+            <Button fx:id="btnMed" layoutX="-2.0" layoutY="441.0" mnemonicParsing="false" onAction="#Medicine" prefHeight="50.0" prefWidth="214.0" text="Dispense Medicine" />
+            <Button fx:id="btnMedInv" layoutX="-2.0" layoutY="391.0" mnemonicParsing="false" onAction="#MedInv" prefHeight="50.0" prefWidth="214.0" text="Medicine Inventory" />
             <Button fx:id="btnLogout" layoutX="29.0" layoutY="727.0" mnemonicParsing="false" onAction="#Logout" prefHeight="30.0" prefWidth="153.0" style="-fx-background-color: red;" text="Logout" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
+            <Button fx:id="btnMP" layoutX="-3.0" layoutY="291.0" mnemonicParsing="false" onAction="#MedProf" prefHeight="50.0" prefWidth="214.0" text="Profiles" />
          </children>
       </AnchorPane>
+      <TextArea fx:id="remark" layoutX="596.0" layoutY="593.0" prefHeight="59.0" prefWidth="150.0" promptText="Remarks" />
    </children>
 </AnchorPane>

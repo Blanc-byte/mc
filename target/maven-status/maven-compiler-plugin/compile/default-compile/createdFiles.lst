@@ -1,3 +1,4 @@
+main\AdminHomeController$3.class
 main\LoginController.class
 main\Patient.class
 main\AdminHomeController$1.class
@@ -15,6 +16,7 @@ main\GiveMed.class
 main\AdminHomeController$2.class
 main\FacRecController.class
 main\StdRecController.class
+main\MedicineController$1.class
 main\PrescController.class
 main\SecondaryController.class
 main\App.class

@@ -17,9 +17,12 @@ public class Patient {
     private String contactInfo;
     private String medicalHistory;
     private String healthStatus;
+    private String remarks;
+    private String dateAdded;
 
     // Constructor
-    public Patient(int id, String patientId, String firstName, String lastName, String gender, LocalDate birthDate, int age, String category, String contactInfo, String medicalHistory, String healthStatus) {
+    public Patient(int id, String patientId, String firstName, String lastName, String gender, LocalDate birthDate,
+            int age, String category, String contactInfo, String medicalHistory, String healthStatus, String remarks, String dateAdded) {
         this.id = id;
         this.patientId = patientId;
         this.firstName = firstName;
@@ -31,6 +34,8 @@ public class Patient {
         this.contactInfo = contactInfo;
         this.medicalHistory = medicalHistory;
         this.healthStatus = healthStatus;
+        this.remarks = remarks;
+        this.dateAdded = dateAdded;
     }
 
     // Getters and setters
@@ -45,4 +50,6 @@ public class Patient {
     public String getContactInfo() { return contactInfo; }
     public String getMedicalHistory() { return medicalHistory; }
     public String getHealthStatus() { return healthStatus; }
+    public String getRemarks() { return remarks; }
+    public String getDateAdded() { return dateAdded; }
 }

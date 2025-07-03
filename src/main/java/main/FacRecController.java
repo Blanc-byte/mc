@@ -123,11 +123,14 @@ private void loadTableData() {
             String contactInfo = resultSet.getString("contact_info");
             String medicalHistory = resultSet.getString("medical_history");
             String healthStatus = resultSet.getString("health_status");
+            String studremarks = resultSet.getString("remarks");
+            String dateadded = resultSet.getString("date_added");
 
             // Only add patients with "Student" category
             if ("Faculty".equalsIgnoreCase(category)) {
                 // Create a Patient object with the id included
-                Patient patient = new Patient(id, patientId, firstName, lastName, gender, birthDate, age, category, contactInfo, medicalHistory, healthStatus);
+                Patient patient = new Patient(id, patientId, firstName, lastName, gender, birthDate, age,
+                        category, contactInfo, medicalHistory, healthStatus, studremarks, dateadded);
                 patientList.add(patient);
             }
         }
@@ -175,11 +178,14 @@ private void loadTableData() {
                 String contactInfo = resultSet.getString("contact_info");
                 String medicalHistory = resultSet.getString("medical_history");
                 String healthStatus = resultSet.getString("health_status");
+                String studremarks = resultSet.getString("remarks");
+                String dateadded = resultSet.getString("date_added");
 
                 // Only add patients with "Student" category
                 if ("Student".equalsIgnoreCase(category)) {
                     // Create a Patient object with the id included
-                    Patient patient = new Patient(id, patientId, firstName, lastName, gender, birthDate, age, category, contactInfo, medicalHistory, healthStatus);
+                    Patient patient = new Patient(id, patientId, firstName, lastName, gender, birthDate, age, category,
+                            contactInfo, medicalHistory, healthStatus, studremarks, dateadded);
                     patientList.add(patient);
                 }
             }

@@ -39,13 +39,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import javafx.geometry.Insets;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class AdminHomeController implements Initializable {
@@ -82,12 +90,15 @@ public class AdminHomeController implements Initializable {
 
     @FXML
     private TableColumn<Patient, String> HealthStatus;
+    
+    @FXML
+    private TableColumn<Patient, String> dateAdded;
 
     @FXML
-    private TextField AgeTF, FnameTF, LnameTF, HealthStatsTF, contactTF, pIdTF, idTF;
+    private TextField FnameTF, LnameTF, HealthStatsTF, contactTF, pIdTF, idTF;
 
     @FXML 
-    private TextArea MedhisTF;
+    private TextArea MedhisTF, remark;
     
     @FXML
     private TextField searchTF;
@@ -101,6 +112,9 @@ public class AdminHomeController implements Initializable {
     @FXML
     private CheckBox Femalechkbx, Malechkbx;
 
+    @FXML
+    private TableColumn<Patient, Void> remarks;
+
     ObservableList<String> categories = FXCollections.observableArrayList("Student", "Faculty","Staff");
 
     @FXML
@@ -108,7 +122,7 @@ public class AdminHomeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        MedhisTF.setWrapText(true);
+        MedhisTF.setWrapText(true);remark.setWrapText(true);
         
         Malechkbx.setOnAction(e -> {
             if (Malechkbx.isSelected()) Femalechkbx.setSelected(false);
@@ -132,29 +146,98 @@ public class AdminHomeController implements Initializable {
         Contact.setCellValueFactory(new PropertyValueFactory<>("contactInfo"));
         MedcialHistory.setCellValueFactory(new PropertyValueFactory<>("medicalHistory"));
         HealthStatus.setCellValueFactory(new PropertyValueFactory<>("healthStatus"));
-        Id.setCellValueFactory(new PropertyValueFactory<>("id")); // Display id in the table
+        Id.setCellValueFactory(new PropertyValueFactory<>("id")); 
+        dateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded")); 
 
+        loadMedicalProfileData();
+        
         // Load data into TableView
         loadTableData();
         
-        // Initialize table columns with the appropriate property names
-        profileIdCol.setCellValueFactory(new PropertyValueFactory<>("profileId"));
-        patientNameCol.setCellValueFactory(new PropertyValueFactory<>("patientName"));
-        bloodTypeCol.setCellValueFactory(new PropertyValueFactory<>("bloodType"));
-        allergiesCol.setCellValueFactory(new PropertyValueFactory<>("allergies"));
-        conditionsCol.setCellValueFactory(new PropertyValueFactory<>("preExistingConditions"));
-        vaccinationsCol.setCellValueFactory(new PropertyValueFactory<>("vaccinations"));
+//        table.setRowFactory(tv -> {
+//            TableRow<Patient> row = new TableRow<>();
+//            row.setOnMouseClicked(event -> {
+//                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+//                    Patient clickedPatient = row.getItem();
+//                    int patientId = clickedPatient.getId();
+//                    showMedicalProfileDialog(patientId);
+//                }
+//            });
+//            return row;
+//        });
 
-        // Load data into the table
-        loadMedicalProfileData();
+
     }
+    private void showMedicalProfileDialog(int patientId) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", "")) {
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM medical_profile WHERE id = ? ORDER BY created_at DESC");
+            stmt.setInt(1, patientId);
+            ResultSet rs = stmt.executeQuery();
+
+            List<MedicalProfile> profiles = new ArrayList<MedicalProfile>();
+            while (rs.next()) {
+                MedicalProfile profile = new MedicalProfile(
+                    rs.getInt("profile_id"),
+                    rs.getString("id"),
+                    rs.getString("blood_type"),
+                    rs.getString("allergies"),
+                    rs.getString("pre_existing_conditions"),
+                    rs.getString("vaccinations"),
+                    rs.getString("created_at")
+                );
+                profiles.add(profile);
+            }
+
+            if (profiles.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("No Records");
+                alert.setHeaderText("No medical profiles found.");
+                alert.showAndWait();
+            } else {
+                // Create content VBox
+                VBox contentBox = new VBox(10);
+                contentBox.setPadding(new Insets(10));
+
+                for (MedicalProfile profile : profiles) {
+                    VBox card = new VBox(5);
+                    card.setStyle("-fx-padding: 10; -fx-background-color: #f8f8f8; -fx-border-color: #ccc; -fx-border-radius: 5;");
+                    card.getChildren().addAll(
+                        new Label("Blood Type: " + profile.getBloodType()),
+                        new Label("Allergies: " + profile.getAllergies()),
+                        new Label("Pre-existing Conditions: " + profile.getPreExistingConditions()),
+                        new Label("Vaccinations: " + profile.getVaccinations()),
+                        new Label("Created_at: " + profile.getCreatedAt())
+                    );
+                    contentBox.getChildren().add(card);
+                }
+
+                // Make scrollable
+                ScrollPane scrollPane = new ScrollPane(contentBox);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setPrefViewportHeight(400); // dialog height
+
+                // Create Dialog
+                Dialog<Void> dialog = new Dialog<>();
+                dialog.setTitle("Medical Profiles");
+                dialog.getDialogPane().setContent(scrollPane);
+                dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+                dialog.showAndWait();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML private Label FacultyCount,StudentCount,StaffCount, Overall;
     int facultyCount=0,studentCount=0,staffCount=0;
     private void loadTableData() {
         ObservableList<Patient> patientList = FXCollections.observableArrayList();
 
-        String query = "SELECT * FROM PATIENTS";
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", ""); PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet resultSet = preparedStatement.executeQuery()) {
+        String query = "SELECT * FROM PATIENTS ORDER BY date_added DESC";
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", ""); 
+                PreparedStatement preparedStatement = connection.prepareStatement(query); 
+                ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
                 // Fetch data including the 'id' field
@@ -169,6 +252,8 @@ public class AdminHomeController implements Initializable {
                 String contactInfo = resultSet.getString("contact_info");
                 String medicalHistory = resultSet.getString("medical_history");
                 String healthStatus = resultSet.getString("health_status");
+                String studremarks = resultSet.getString("remarks");
+                String dateadded = resultSet.getString("date_added");
                 if(category.equals("Faculty")){
                     facultyCount++;
                 }else if(category.equals("Student")){
@@ -177,7 +262,8 @@ public class AdminHomeController implements Initializable {
                     staffCount++;
                 }
                 // Create a Patient object with the id included
-                Patient patient = new Patient(id, patientId, firstName, lastName, gender, birthDate, age, category, contactInfo, medicalHistory, healthStatus);
+                Patient patient = new Patient(id, patientId, firstName, lastName, gender, birthDate, 
+                        age, category, contactInfo, medicalHistory, healthStatus, studremarks, dateadded);
                 patientList.add(patient);
             }
         } catch (SQLException e) {
@@ -186,27 +272,158 @@ public class AdminHomeController implements Initializable {
         FacultyCount.setText("Faculty: "+facultyCount);
         StudentCount.setText("Student: "+studentCount);
         StaffCount.setText("Staff: "+staffCount);
-        Overall.setText("Overall: "+(staffCount+studentCount+studentCount));
+        Overall.setText("Overall: "+(staffCount+studentCount+facultyCount));
         table.setItems(patientList);
-        table.setRowFactory(tv -> new TableRow<Patient>() {
-            @Override
-            protected void updateItem(Patient patient, boolean empty) {
-                super.updateItem(patient, empty);
+        table.setRowFactory(tv -> {
+            TableRow<Patient> row = new TableRow<>() {
+                @Override
+                protected void updateItem(Patient patient, boolean empty) {
+                    super.updateItem(patient, empty);
 
-                if (patient == null || empty) {
-                    setStyle(""); // reset style
-                } else {
-                    // Check if the patient's id is in the ids list
-                    if (ids.contains(String.valueOf(patient.getId()))) {
-                        setStyle("-fx-background-color: #ffe6e6;"); // light red
+                    if (patient == null || empty) {
+                        setStyle(""); 
                     } else {
-                        setStyle(""); // default style
+                        if (ids.contains(String.valueOf(patient.getId()))) {
+                            setStyle("-fx-background-color: #ffe6e6;");
+                        } else {
+                            setStyle("");
+                        }
                     }
+                }
+            };
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Patient clickedPatient = row.getItem();
+                    int patientId = clickedPatient.getId();
+                    showMedicalProfileDialog(patientId);
+                }
+            });
+
+            return row;
+        });
+        remarks.setCellFactory(col -> new TableCell<>() {
+            private final Button viewButton = new Button("View");
+            private final Button deleteButton = new Button("Delete");
+            private final HBox buttonBox = new HBox(5, viewButton, deleteButton); // Add spacing between buttons
+
+            {
+                viewButton.setStyle("-fx-background-color: #87CEFA; -fx-text-fill: white;");
+                deleteButton.setStyle("-fx-background-color: #FF6B6B; -fx-text-fill: white;");
+
+                viewButton.setOnAction(e -> {
+                    Patient patient = getTableView().getItems().get(getIndex());
+                    showRemarkDialog(patient); // pass patient object now
+                });
+
+
+                deleteButton.setOnAction(e -> {
+                    Patient patient = getTableView().getItems().get(getIndex());
+                    deleteRemark(patient); // This is the method you will define
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+
+                Patient patient = getTableView().getItems().get(getIndex());
+                if (patient.getRemarks() != null && !patient.getRemarks().isBlank()) {
+                    setGraphic(buttonBox);
+                } else {
+                    setGraphic(null);
                 }
             }
         });
 
+
     }
+    private void deleteRemark(Patient patient) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirm Deletion");
+        confirm.setHeaderText("Are you sure you want to delete this remark?");
+        confirm.setContentText("This cannot be undone.");
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", "");
+                 PreparedStatement stmt = conn.prepareStatement("UPDATE patients SET remarks = NULL WHERE id = ?")) {
+
+                stmt.setInt(1, patient.getId());
+                int affected = stmt.executeUpdate();
+
+                if (affected > 0) {
+                    loadTableData();
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setTitle("Database Error");
+                error.setHeaderText("Could not delete remark.");
+                error.setContentText(ex.getMessage());
+                error.showAndWait();
+            }
+        }
+    }
+
+    private void showRemarkDialog(Patient patient) {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Patient Remark");
+        dialog.setHeaderText("View or Edit Remark");
+
+        // Set button types
+        ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+        // Create a TextArea to allow multi-line editing
+        TextArea remarkArea = new TextArea();
+        remarkArea.setWrapText(true);
+        remarkArea.setPrefRowCount(5);
+        remarkArea.setText(patient.getRemarks() != null ? patient.getRemarks() : "");
+
+        dialog.getDialogPane().setContent(remarkArea);
+
+        // Convert result when Save is clicked
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButtonType) {
+                return remarkArea.getText();
+            }
+            return null;
+        });
+
+        Optional<String> result = dialog.showAndWait();
+
+        result.ifPresent(newRemark -> {
+            // Update database
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", "");
+                 PreparedStatement stmt = conn.prepareStatement("UPDATE patients SET remarks = ? WHERE id = ?")) {
+
+                stmt.setString(1, newRemark);
+                stmt.setInt(2, patient.getId());
+                int updated = stmt.executeUpdate();
+
+                if (updated > 0) {
+                    loadTableData();
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setTitle("Database Error");
+                error.setHeaderText("Could not update remark.");
+                error.setContentText(ex.getMessage());
+                error.showAndWait();
+            }
+        });
+    }
+
+
     
     private void loadTableDatas(String searchTerm) {
         ObservableList<Patient> patientList = FXCollections.observableArrayList();
@@ -244,9 +461,12 @@ public class AdminHomeController implements Initializable {
                     String contactInfo = resultSet.getString("contact_info");
                     String medicalHistory = resultSet.getString("medical_history");
                     String healthStatus = resultSet.getString("health_status");
+                    String studremarks = resultSet.getString("remarks");
+                    String dateadded = resultSet.getString("date_added");
 
                     // Create a Patient object with the id included
-                    Patient patient = new Patient(id, patientId, firstName, lastName, gender, birthDate, age, category, contactInfo, medicalHistory, healthStatus);
+                    Patient patient = new Patient(id, patientId, firstName, lastName, gender, birthDate,
+                            age, category, contactInfo, medicalHistory, healthStatus, studremarks, dateadded);
                     patientList.add(patient);
                 }
             }
@@ -256,23 +476,35 @@ public class AdminHomeController implements Initializable {
 
         // Update the table view with the filtered list
         table.setItems(patientList);
-        table.setRowFactory(tv -> new TableRow<Patient>() {
-            @Override
-            protected void updateItem(Patient patient, boolean empty) {
-                super.updateItem(patient, empty);
+        table.setRowFactory(tv -> {
+            TableRow<Patient> row = new TableRow<>() {
+                @Override
+                protected void updateItem(Patient patient, boolean empty) {
+                    super.updateItem(patient, empty);
 
-                if (patient == null || empty) {
-                    setStyle(""); // reset style
-                } else {
-                    // Check if the patient's id is in the ids list
-                    if (ids.contains(String.valueOf(patient.getId()))) {
-                        setStyle("-fx-background-color: #ffe6e6;"); // light red
+                    if (patient == null || empty) {
+                        setStyle(""); // reset style
                     } else {
-                        setStyle(""); // default style
+                        if (ids.contains(String.valueOf(patient.getId()))) {
+                            setStyle("-fx-background-color: #ffe6e6;");
+                        } else {
+                            setStyle("");
+                        }
                     }
                 }
-            }
+            };
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Patient clickedPatient = row.getItem();
+                    int patientId = clickedPatient.getId();
+                    showMedicalProfileDialog(patientId);
+                }
+            });
+
+            return row;
         });
+
     }
 
     @FXML
@@ -346,6 +578,7 @@ public class AdminHomeController implements Initializable {
         String firstName = FnameTF.getText();
         String lastName = LnameTF.getText();
         String gender = null;
+        String studremark = remark.getText()+"";
 
         if (Malechkbx.isSelected()) {
             gender = "Male";
@@ -354,7 +587,6 @@ public class AdminHomeController implements Initializable {
         }
 
         LocalDate birthDate = DoBTF.getValue();
-        String ageText = AgeTF.getText();
         String category = CategorycomboBox.getValue();
         String contactInfo = contactTF.getText();
         String medicalHistory = MedhisTF.getText();
@@ -362,7 +594,7 @@ public class AdminHomeController implements Initializable {
 
         // Check for missing or invalid input
         if (patientId.isEmpty() || firstName.isEmpty() || lastName.isEmpty() ||
-            gender == null || birthDate == null || ageText.isEmpty() ||
+            gender == null || birthDate == null ||
             category == null || contactInfo.isEmpty() ||
             medicalHistory.isEmpty() || healthStatus.isEmpty()) {
 
@@ -374,30 +606,25 @@ public class AdminHomeController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Invalid Contact Number", "Please enter a valid Philippine mobile number (e.g., 09123456789 or +639123456789).");
             return;
         }
-
-        int age;
-        try {
-            age = Integer.parseInt(ageText);
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Invalid Age", "Please enter a valid number for age.");
-            return;
-        }
+        
+        int age = Period.between(birthDate, LocalDate.now()).getYears();
 
         // Save to database
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", "")) {
-            String query = "INSERT INTO PATIENTS (patients_id, first_name, last_name, gender, birthdate, age, category, contact_info, medical_history, health_status) "
-                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO PATIENTS (patients_id, first_name, last_name, gender, birthdate, age, category, contact_info, medical_history, health_status, remarks) "
+                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, patientId);
             preparedStatement.setString(2, firstName);
             preparedStatement.setString(3, lastName);
             preparedStatement.setString(4, gender);
-            preparedStatement.setDate(5, java.sql.Date.valueOf(birthDate));
+            preparedStatement.setDate(5, Date.valueOf(birthDate));
             preparedStatement.setInt(6, age);
             preparedStatement.setString(7, category);
             preparedStatement.setString(8, contactInfo);
             preparedStatement.setString(9, medicalHistory);
             preparedStatement.setString(10, healthStatus);
+            preparedStatement.setString(11, studremark);
 
             int rowsInserted = preparedStatement.executeUpdate();
             if (rowsInserted > 0) {
@@ -419,7 +646,6 @@ public class AdminHomeController implements Initializable {
         Malechkbx.setSelected(false);
         Femalechkbx.setSelected(false);
         DoBTF.setValue(null);
-        AgeTF.clear();
         CategorycomboBox.setValue(null);
         contactTF.clear();
         MedhisTF.clear();
@@ -479,7 +705,6 @@ public class AdminHomeController implements Initializable {
             DoBTF.setValue(selectedPatient.getBirthDate());
 
             // Set other fields
-            AgeTF.setText(String.valueOf(selectedPatient.getAge()));
             CategorycomboBox.setValue(selectedPatient.getCategory());
             contactTF.setText(selectedPatient.getContactInfo());
             MedhisTF.setText(selectedPatient.getMedicalHistory());
@@ -491,7 +716,7 @@ public class AdminHomeController implements Initializable {
     void Save(ActionEvent event) {
         // Validate if the necessary fields are filled
         if (pIdTF.getText().isEmpty() || FnameTF.getText().isEmpty() || LnameTF.getText().isEmpty()
-                || AgeTF.getText().isEmpty() || contactTF.getText().isEmpty() ) {
+                || contactTF.getText().isEmpty() ) {
             // Show an error alert if fields are missing
             showAlert(Alert.AlertType.ERROR, "Form Error", "Please fill in all the fields.");
             return;
@@ -510,8 +735,10 @@ public class AdminHomeController implements Initializable {
                 preparedStatement.setString(2, FnameTF.getText());
                 preparedStatement.setString(3, LnameTF.getText());
                 preparedStatement.setString(4, Femalechkbx.isSelected() ? "Female" : "Male"); // Set gender based on checkbox
-                preparedStatement.setDate(5, Date.valueOf(DoBTF.getValue()));
-                preparedStatement.setInt(6, Integer.parseInt(AgeTF.getText()));
+                LocalDate birthDate = DoBTF.getValue(); 
+                preparedStatement.setDate(5, Date.valueOf(birthDate));
+                int age = Period.between(birthDate, LocalDate.now()).getYears();
+                preparedStatement.setInt(6, age);
                 preparedStatement.setString(7, CategorycomboBox.getValue());
                 preparedStatement.setString(8, contactTF.getText());
                 preparedStatement.setString(9, MedhisTF.getText());
@@ -639,6 +866,7 @@ public class AdminHomeController implements Initializable {
                 successAlert.setHeaderText(null);
                 successAlert.setContentText("Medical profile successfully saved for " + selectedPatient.getFirstName() + " " + selectedPatient.getLastName());
                 successAlert.showAndWait();
+                loadMedicalProfileData();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -648,10 +876,24 @@ public class AdminHomeController implements Initializable {
             errorAlert.setContentText("An error occurred while saving the medical profile.");
             errorAlert.showAndWait();
         }
-    }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Medical Consultation");
+        alert.setHeaderText("Do you want to proceed with medical consultation?");
+        alert.setContentText("This action will open the MedicalConsult process.");
 
-    @FXML
-    void MedicalConsult(ActionEvent event) {
+        // Customize button types
+        ButtonType proceedButton = new ButtonType("Proceed");
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(proceedButton, cancelButton);
+
+        // Show dialog and wait for user response
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == proceedButton) {
+            runMedicalConsult();
+        }
+    }
+    private void runMedicalConsult() {
         // Get the selected patient from the table
         Patient selectedPatient = table.getSelectionModel().getSelectedItem();
         if (selectedPatient == null) {
@@ -809,61 +1051,43 @@ public class AdminHomeController implements Initializable {
             errorAlert.showAndWait();
         }
     }
+
+
+    @FXML
+    void MedicalConsult(ActionEvent event) {
+        Patient selectedPatient = table.getSelectionModel().getSelectedItem();
+        if (ids.contains(String.valueOf(selectedPatient.getId()))) {
+            runMedicalConsult();
+        } else {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("No Medical Profile");
+            errorAlert.setHeaderText(null);
+            errorAlert.setContentText("Create a medical profile for the student to proceed.");
+            errorAlert.showAndWait();
+        }
+    }
     
-    
-    
-    @FXML
-    private TableView<MedicalProfile> medicalProfileTable;
 
-    @FXML
-    private TableColumn<MedicalProfile, Integer> profileIdCol;
-
-    @FXML
-    private TableColumn<MedicalProfile, String> patientNameCol;
-
-    @FXML
-    private TableColumn<MedicalProfile, String> bloodTypeCol;
-
-    @FXML
-    private TableColumn<MedicalProfile, String> allergiesCol;
-
-    @FXML
-    private TableColumn<MedicalProfile, String> conditionsCol;
-
-    @FXML
-    private TableColumn<MedicalProfile, String> vaccinationsCol;
-
-    private ObservableList<MedicalProfile> medicalProfiles;
     ObservableList<String> ids = FXCollections.observableArrayList();
     private void loadMedicalProfileData() {
-        medicalProfiles = FXCollections.observableArrayList();
         String query = "SELECT mp.id,mp.profile_id, CONCAT(p.first_name, ' ', p.last_name) AS name, "
-                + "mp.blood_type, mp.allergies, mp.pre_existing_conditions, mp.vaccinations "
+                + "mp.blood_type, mp.allergies, mp.pre_existing_conditions, mp.vaccinations, mp.created_at "
                 + "FROM MEDICAL_PROFILE mp "
                 + "JOIN PATIENTS p ON mp.id = p.id";
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", ""); PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", ""); 
+        PreparedStatement preparedStatement = connection.prepareStatement(query); 
+        ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                int profileId = resultSet.getInt("profile_id");
-                String name = resultSet.getString("name");
-                String bloodType = resultSet.getString("blood_type");
-                String allergies = resultSet.getString("allergies");
-                String preExistingConditions = resultSet.getString("pre_existing_conditions");
-                String vaccinations = resultSet.getString("vaccinations");
                 String Id = resultSet.getString("id");
                 ids.add(Id);
-                // Create and add the MedicalProfile object
-                MedicalProfile medicalProfile = new MedicalProfile(
-                        profileId, name, bloodType, allergies, preExistingConditions, vaccinations);
-                medicalProfiles.add(medicalProfile);
+                System.out.println(ids);
+                System.out.println(Id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        // Set the data in the table view
-        medicalProfileTable.setItems(medicalProfiles);
     }
     
     

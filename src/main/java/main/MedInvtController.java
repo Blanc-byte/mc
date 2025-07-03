@@ -106,7 +106,8 @@ public class MedInvtController implements Initializable {
                 + "gm.give_date "
                 + "FROM GiveMed gm "
                 + "JOIN PATIENTS p ON gm.patient_id = p.id "
-                + "JOIN MEDICINE m ON gm.medicine_id = m.medicine_id";
+                + "JOIN MEDICINE m ON gm.medicine_id = m.medicine_id "
+                + "ORDER BY gm.give_date DESC";
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", ""); PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet resultSet = preparedStatement.executeQuery()) {
 
