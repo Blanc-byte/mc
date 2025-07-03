@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2025 at 08:37 AM
+-- Generation Time: Jul 03, 2025 at 05:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,7 +52,19 @@ CREATE TABLE `givemed` (
 --
 
 INSERT INTO `givemed` (`give_med_id`, `patient_id`, `medicine_id`, `quantity`, `give_date`) VALUES
-(1, 1, 1, 2, '2025-05-09 07:56:51');
+(1, 1, 1, 2, '2025-05-09 07:56:51'),
+(2, 9, 2, 2, '2025-07-03 13:32:38'),
+(3, 6, 1, 2, '2025-07-03 14:08:04'),
+(4, 3, 2, 1, '2025-07-03 14:13:54'),
+(5, 3, 2, 2, '2025-07-03 14:13:59'),
+(6, 8, 1, 5, '2025-07-03 14:14:26'),
+(7, 8, 2, 2, '2025-07-03 14:14:30'),
+(8, 7, 3, 2, '2025-07-03 14:17:38'),
+(9, 7, 1, 2, '2025-07-03 14:18:59'),
+(10, 1, 4, 12, '2025-07-03 15:50:37'),
+(11, 1, 2, 2, '2025-07-03 15:50:43'),
+(12, 2, 3, 2, '2025-07-03 15:53:10'),
+(13, 2, 1, 1, '2025-07-03 15:53:16');
 
 -- --------------------------------------------------------
 
@@ -82,7 +94,8 @@ INSERT INTO `medical_consultation` (`consultation_id`, `id`, `consultation_date`
 (6, 1, '2025-05-07', 'Emergency', 'ASD', 'Follow Up (1 WEEK)'),
 (7, 2, '2025-05-15', 'Emergency', '', 'No Follow Up'),
 (8, 2, '2025-05-14', 'Regular Checkup', 'Allergies', 'Follow Up (1 WEEK)'),
-(9, 5, '2025-05-11', 'Emergency', 'non', 'Follow Up (1 WEEK)');
+(9, 5, '2025-05-11', 'Emergency', 'non', 'Follow Up (1 WEEK)'),
+(10, 3, '2025-07-03', 'Emergency', 'SAD', 'No Follow Up');
 
 -- --------------------------------------------------------
 
@@ -96,18 +109,25 @@ CREATE TABLE `medical_profile` (
   `blood_type` enum('A+','A-','B+','B-','AB+','AB-','O+','O-') DEFAULT NULL,
   `allergies` text DEFAULT NULL,
   `pre_existing_conditions` text DEFAULT NULL,
-  `vaccinations` text DEFAULT NULL
+  `vaccinations` text DEFAULT NULL,
+  `created_at` datetime(6) NOT NULL DEFAULT current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `medical_profile`
 --
 
-INSERT INTO `medical_profile` (`profile_id`, `id`, `blood_type`, `allergies`, `pre_existing_conditions`, `vaccinations`) VALUES
-(1, 1, 'A+', '', '', ''),
-(2, 2, 'A+', 'None', 'None', 'COVID-19'),
-(3, 3, 'A+', 'Shrimp', 'Chicken Fox', 'COvid'),
-(4, 5, 'O+', 'non', 'non', 'non');
+INSERT INTO `medical_profile` (`profile_id`, `id`, `blood_type`, `allergies`, `pre_existing_conditions`, `vaccinations`, `created_at`) VALUES
+(1, 1, 'A+', '', '', '', '2025-07-02 20:53:16.379874'),
+(2, 2, 'A+', 'None', 'None', 'COVID-19', '2025-07-02 20:53:16.379874'),
+(3, 3, 'A+', 'Shrimp', 'Chicken Fox', 'COvid', '2025-07-02 20:53:16.379874'),
+(4, 5, 'O+', 'non', 'non', 'non', '2025-07-02 20:53:16.379874'),
+(5, 5, 'O+', 'Hangin', 'None', 'Preca', '2025-07-02 20:53:16.379874'),
+(6, 5, 'A+', 'Chicken', 'None', 'sad', '2025-07-02 20:53:16.379874'),
+(7, 5, 'A+', '<ampok', 'Hubak', 'Swa', '2025-07-02 20:53:16.379874'),
+(8, 3, 'A-', 'Shab', 'Mari', 'Juana', '2025-07-02 22:40:12.549752'),
+(9, 3, 'A-', 'HJasd', 'asd', 'sdlfk', '2025-07-02 22:43:26.377729'),
+(10, 2, 'A+', 'asd', 'asd', 'asd', '2025-07-02 22:43:52.290875');
 
 -- --------------------------------------------------------
 
@@ -130,7 +150,9 @@ CREATE TABLE `medicine` (
 
 INSERT INTO `medicine` (`medicine_id`, `name`, `description`, `quantity_stock`, `expiry_date`, `brand`) VALUES
 (1, 'Paracetamol', 'Sad to say None', 48, '2025-05-10', 'Neozep'),
-(2, 'Sabon', 'Humot', 9, '2025-05-12', 'Panlaba');
+(2, 'Sabon', 'Humot', 7, '2025-05-12', 'Panlaba'),
+(3, 'Medicol', 'SADasd', 20, '2027-07-22', 'Saksss'),
+(4, 'qwery', 'asd', 123, '2025-07-08', 'ds');
 
 -- --------------------------------------------------------
 
@@ -149,19 +171,25 @@ CREATE TABLE `patients` (
   `category` enum('Student','Faculty','Staff') NOT NULL,
   `contact_info` varchar(100) DEFAULT NULL,
   `medical_history` text DEFAULT NULL,
-  `health_status` text DEFAULT NULL
+  `health_status` text DEFAULT NULL,
+  `remarks` varchar(255) DEFAULT NULL,
+  `date_added` datetime(6) NOT NULL DEFAULT current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `patients`
 --
 
-INSERT INTO `patients` (`id`, `patients_id`, `first_name`, `last_name`, `gender`, `birthdate`, `age`, `category`, `contact_info`, `medical_history`, `health_status`) VALUES
-(1, '123', 'Vue', 'Temp', 'Male', '2025-05-07', 22, 'Student', '09510476375', 'None', 'Normal'),
-(2, '123123', 'Sad', 'Sad', 'Male', '2025-05-08', 21, 'Student', '09510476375', 'sdAd', 'None'),
-(3, '12334', 'qwe', 'qwe', 'Male', '2025-05-13', 22, 'Faculty', '09345678910', 'ad', 'asd'),
-(4, '234234', 'asd', 'asd', 'Male', '2025-05-09', 22, 'Staff', '09510476375', 'asd', 'sad'),
-(5, '456', 'lkj', 'lkjh', 'Male', '2025-05-21', 22, 'Staff', '09510476375', 'ljug', 'gvkh');
+INSERT INTO `patients` (`id`, `patients_id`, `first_name`, `last_name`, `gender`, `birthdate`, `age`, `category`, `contact_info`, `medical_history`, `health_status`, `remarks`, `date_added`) VALUES
+(1, '123', 'Vue', 'Temp', 'Male', '2025-05-07', 22, 'Student', '09510476375', 'None', 'Normal', NULL, '2025-07-03 21:25:57.442175'),
+(2, '123123', 'Sad', 'Sad', 'Male', '2025-05-08', 21, 'Student', '09510476375', 'sdAd', 'None', NULL, '2025-07-03 21:25:57.442175'),
+(3, '12334', 'qwe', 'qwe', 'Male', '2025-05-13', 22, 'Faculty', '09345678910', 'ad', 'asd', NULL, '2025-07-03 21:25:57.442175'),
+(4, '234234', 'asd', 'asd', 'Male', '2025-05-09', 22, 'Staff', '09510476375', 'asd', 'sad', NULL, '2025-07-03 21:25:57.442175'),
+(5, '456', 'lkj', 'lkjh', 'Male', '2025-05-21', 22, 'Staff', '09510476375', 'ljug', 'gvkh', NULL, '2025-07-03 21:25:57.442175'),
+(6, '2021-1312', 'Vue', 'Temp', 'Male', '2002-10-08', 22, 'Student', '09123456789', 'None', 'Good', NULL, '2025-07-03 21:25:57.442175'),
+(7, '2021-3123', 'Nah', 'Han', 'Male', '2015-07-21', 9, 'Student', '09510476652', 'None', 'Great', NULL, '2025-07-03 21:25:57.442175'),
+(8, '2022-0000', 'Sadsss', 'Sadss', 'Male', '2010-07-21', 14, 'Student', '09515151515', 'Nd', 'great', 'nAHHHH', '2025-07-03 21:25:57.442175'),
+(9, '1232-1231', 'qweq', 'qwe', 'Male', '2006-07-27', 18, 'Student', '09515151456', 'tf', 's', 'rc faev', '2025-07-03 21:27:23.895986');
 
 -- --------------------------------------------------------
 
@@ -182,7 +210,14 @@ CREATE TABLE `prescription` (
 --
 
 INSERT INTO `prescription` (`prescription_id`, `consultation_id`, `dosage`, `frequency`, `duration`) VALUES
-(1, 5, 'Lamok', '33', '8');
+(1, 5, 'Lamok', '33', '8'),
+(2, 4, '3TIMES A DAY', '2', '21HOURS'),
+(3, 6, 'asd', 'sasd', 'asd'),
+(4, 3, 'asd', 'sad', 'sad'),
+(5, 8, '2', '2', '2'),
+(6, 7, 'sa', 'asd', '2'),
+(7, 1, 'feed', 'deef', '63'),
+(8, 2, 'ADSADAD', 'ASDASD', 'ASDASD');
 
 -- --------------------------------------------------------
 
@@ -270,37 +305,37 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `givemed`
 --
 ALTER TABLE `givemed`
-  MODIFY `give_med_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `give_med_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `medical_consultation`
 --
 ALTER TABLE `medical_consultation`
-  MODIFY `consultation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `consultation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `medical_profile`
 --
 ALTER TABLE `medical_profile`
-  MODIFY `profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `medicine`
 --
 ALTER TABLE `medicine`
-  MODIFY `medicine_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `medicine_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `prescription`
 --
 ALTER TABLE `prescription`
-  MODIFY `prescription_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `prescription_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `specific`
