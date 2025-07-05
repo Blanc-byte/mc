@@ -28,6 +28,7 @@
             <Font name="System Italic" size="24.0" />
          </font>
       </Label>
+      <TextField fx:id="search" layoutX="244.0" layoutY="102.0" onKeyReleased="#onSearchKeyReleased" prefHeight="26.0" prefWidth="330.0" />
       <AnchorPane prefHeight="821.0" prefWidth="193.0" style="-fx-background-color: pink;">
          <children>
             <Label layoutX="14.0" layoutY="24.0" text="Welcome Admin">
@@ -40,19 +41,42 @@
                   <Image url="@img/admin-panel.png" />
                </image>
             </ImageView>
-            <Button fx:id="btnDashboard" layoutY="191.0" mnemonicParsing="false" onAction="#Dashboard" prefHeight="50.0" prefWidth="214.0" text="Dashboard" />
-            <Button fx:id="btnPatients" layoutX="-2.0" layoutY="241.0" mnemonicParsing="false" onAction="#Patients" prefHeight="50.0" prefWidth="214.0" text="Patients" />
-            <Button fx:id="btnMP" layoutX="-4.0" layoutY="341.0" mnemonicParsing="false" onAction="#MedCon" prefHeight="50.0" prefWidth="214.0" text="Prescription" />
-            <Button fx:id="btnMed" layoutX="-2.0" layoutY="441.0" mnemonicParsing="false" onAction="#Medicine" prefHeight="50.0" prefWidth="214.0" text="Dispense Medicine" />
-            <Button fx:id="btnMedInv" layoutX="-2.0" layoutY="391.0" mnemonicParsing="false" onAction="#MedInv" prefHeight="50.0" prefWidth="214.0" text="Medicine Inventory" />
+            <Button fx:id="btnDashboard" layoutY="191.0" mnemonicParsing="false" onAction="#Dashboard" prefHeight="50.0" prefWidth="214.0" text="Dashboard">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnPatients" layoutX="-2.0" layoutY="241.0" mnemonicParsing="false" onAction="#Patients" prefHeight="50.0" prefWidth="214.0" text="Patients">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnMP" layoutX="-4.0" layoutY="341.0" mnemonicParsing="false" onAction="#MedCon" prefHeight="50.0" prefWidth="214.0" text="Prescription">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnMed" layoutX="-2.0" layoutY="441.0" mnemonicParsing="false" onAction="#Medicine" prefHeight="50.0" prefWidth="214.0" text="Medicine Inventory">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnMedInv" layoutX="-2.0" layoutY="391.0" mnemonicParsing="false" onAction="#MedInv" prefHeight="50.0" prefWidth="214.0" text="Dispense Medicine">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
             <Button fx:id="btnLogout" layoutX="29.0" layoutY="727.0" mnemonicParsing="false" onAction="#Logout" prefHeight="30.0" prefWidth="153.0" style="-fx-background-color: red;" text="Logout" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Button fx:id="btnMP" layoutX="-3.0" layoutY="291.0" mnemonicParsing="false" onAction="#MedProf" prefHeight="50.0" prefWidth="214.0" text="Profiles" />
+            <Button fx:id="btnMP" layoutX="-3.0" layoutY="291.0" mnemonicParsing="false" onAction="#MedProf" prefHeight="50.0" prefWidth="214.0" text="Profiles">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
-      <TextField fx:id="search" layoutX="244.0" layoutY="102.0" onKeyReleased="#onSearchKeyReleased" prefHeight="26.0" prefWidth="330.0" />
    </children>
 </AnchorPane>

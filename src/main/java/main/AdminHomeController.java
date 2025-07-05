@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Dialog;
@@ -53,6 +54,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -95,7 +97,7 @@ public class AdminHomeController implements Initializable {
     private TableColumn<Patient, String> dateAdded;
 
     @FXML
-    private TextField FnameTF, LnameTF, HealthStatsTF, contactTF, pIdTF, idTF;
+    private TextField FnameTF, LnameTF, contactTF, pIdTF, idTF;
 
     @FXML 
     private TextArea MedhisTF, remark;
@@ -104,7 +106,7 @@ public class AdminHomeController implements Initializable {
     private TextField searchTF;
 
     @FXML
-    private ComboBox<String> CategorycomboBox;
+    private ComboBox<String> CategorycomboBox, healthStatusCom;
 
     @FXML
     private DatePicker DoBTF;
@@ -116,6 +118,7 @@ public class AdminHomeController implements Initializable {
     private TableColumn<Patient, Void> remarks;
 
     ObservableList<String> categories = FXCollections.observableArrayList("Student", "Faculty","Staff");
+    ObservableList<String> healthStatusCat = FXCollections.observableArrayList("Below Normal", "Normal","Abnormal");
 
     @FXML
     private TableColumn<Patient, Integer> Id; // Column for id
@@ -134,6 +137,7 @@ public class AdminHomeController implements Initializable {
         
         // Populate ComboBox with category options
         CategorycomboBox.setItems(categories);
+        healthStatusCom.setItems(healthStatusCat);
 
         // Configure TableView columns
         PatientId.setCellValueFactory(new PropertyValueFactory<>("patientId"));
@@ -168,6 +172,30 @@ public class AdminHomeController implements Initializable {
 
 
     }
+    private ObservableList<Patient> fullPatientList = FXCollections.observableArrayList();
+
+    @FXML
+    private void onSearchKeyReleased(KeyEvent event) {
+        String filter = searchTF.getText().toLowerCase();
+
+        FilteredList<Patient> filteredData = new FilteredList<>(fullPatientList, patient -> {
+            if (filter == null || filter.isEmpty()) {
+                return true;
+            }
+
+            return patient.getFirstName().toLowerCase().contains(filter) ||
+                   patient.getLastName().toLowerCase().contains(filter) ||
+                   patient.getPatientId().toLowerCase().contains(filter) ||
+                   patient.getGender().toLowerCase().contains(filter) ||
+                   patient.getCategory().toLowerCase().contains(filter) ||
+                   patient.getContactInfo().toLowerCase().contains(filter) ||
+                   patient.getMedicalHistory().toLowerCase().contains(filter) ||
+                   patient.getHealthStatus().toLowerCase().contains(filter);
+        });
+
+        table.setItems(filteredData);
+    }
+
     private void showMedicalProfileDialog(int patientId) {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", "")) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM medical_profile WHERE id = ? ORDER BY created_at DESC");
@@ -274,6 +302,7 @@ public class AdminHomeController implements Initializable {
         StaffCount.setText("Staff: "+staffCount);
         Overall.setText("Overall: "+(staffCount+studentCount+facultyCount));
         table.setItems(patientList);
+        fullPatientList.addAll(patientList);
         table.setRowFactory(tv -> {
             TableRow<Patient> row = new TableRow<>() {
                 @Override
@@ -590,7 +619,7 @@ public class AdminHomeController implements Initializable {
         String category = CategorycomboBox.getValue();
         String contactInfo = contactTF.getText();
         String medicalHistory = MedhisTF.getText();
-        String healthStatus = HealthStatsTF.getText();
+        String healthStatus = healthStatusCom.getValue();
 
         // Check for missing or invalid input
         if (patientId.isEmpty() || firstName.isEmpty() || lastName.isEmpty() ||
@@ -647,9 +676,9 @@ public class AdminHomeController implements Initializable {
         Femalechkbx.setSelected(false);
         DoBTF.setValue(null);
         CategorycomboBox.setValue(null);
+        healthStatusCom.setValue(null);
         contactTF.clear();
         MedhisTF.clear();
-        HealthStatsTF.clear();
     }
 
     @FXML
@@ -706,9 +735,9 @@ public class AdminHomeController implements Initializable {
 
             // Set other fields
             CategorycomboBox.setValue(selectedPatient.getCategory());
+            healthStatusCom.setValue(selectedPatient.getHealthStatus());
             contactTF.setText(selectedPatient.getContactInfo());
             MedhisTF.setText(selectedPatient.getMedicalHistory());
-            HealthStatsTF.setText(selectedPatient.getHealthStatus());
         }
     }
 
@@ -742,7 +771,7 @@ public class AdminHomeController implements Initializable {
                 preparedStatement.setString(7, CategorycomboBox.getValue());
                 preparedStatement.setString(8, contactTF.getText());
                 preparedStatement.setString(9, MedhisTF.getText());
-                preparedStatement.setString(10, HealthStatsTF.getText());
+                preparedStatement.setString(10, healthStatusCom.getValue());
                 preparedStatement.setInt(11, selectedPatient.getId());
 
                 // Execute the update

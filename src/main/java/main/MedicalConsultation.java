@@ -11,15 +11,21 @@ public class MedicalConsultation {
     private String consultationType;
     private String diagnosis;
     private String prescribedTreatment;
+    private String id;
 
     public MedicalConsultation(int consultationId, String patientName, String consultationDate,
-                               String consultationType, String diagnosis, String prescribedTreatment) {
+                               String consultationType, String diagnosis, String prescribedTreatment, String id) {
         this.consultationId = consultationId;
         this.patientName = patientName;
         this.consultationDate = consultationDate;
         this.consultationType = consultationType;
         this.diagnosis = diagnosis;
         this.prescribedTreatment = prescribedTreatment;
+        this.id = id;
+    }
+    
+    public String getId() {
+        return id;
     }
 
     public int getConsultationId() {

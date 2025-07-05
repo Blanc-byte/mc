@@ -217,11 +217,12 @@ public class MedConController implements Initializable {
 //                        showError("Invalid quantity.");
                         break;
                     }
+                    System.out.println(selectedConsultation.getConsultationId());
 
                     // Insert into givemed
                     String giveQuery = "INSERT INTO givemed (patient_id, medicine_id, quantity, give_date) VALUES (?, ?, ?, NOW())";
                     try (PreparedStatement giveStmt = connection.prepareStatement(giveQuery)) {
-                        giveStmt.setInt(1, selectedConsultation.getConsultationId());
+                        giveStmt.setString(1, selectedConsultation.getId());
                         giveStmt.setInt(2, medicineId);
                         giveStmt.setInt(3, quantity);
                         giveStmt.executeUpdate();
@@ -421,9 +422,10 @@ public class MedConController implements Initializable {
 
         String query
                 = "SELECT mc.consultation_id, CONCAT(p.first_name, ' ', p.last_name) AS patient_name, "
-                + "mc.consultation_date, mc.consultation_type, mc.diagnosis, mc.prescribed_treatment "
+                + "mc.consultation_date, mc.consultation_type, mc.diagnosis, mc.prescribed_treatment, mc.id, mc.date_added "
                 + "FROM MEDICAL_CONSULTATION mc "
-                + "JOIN PATIENTS p ON mc.id = p.id";
+                + "JOIN PATIENTS p ON mc.id = p.id "
+                + "ORDER BY mc.date_added DESC";
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", ""); PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet resultSet = preparedStatement.executeQuery()) {
 
@@ -434,8 +436,10 @@ public class MedConController implements Initializable {
                 String consultationType = resultSet.getString("consultation_type");
                 String diagnosis = resultSet.getString("diagnosis");
                 String prescribedTreatment = resultSet.getString("prescribed_treatment");
+                String ids = resultSet.getString("id");
 
-                consultations.add(new MedicalConsultation(consultationId, patientName, consultationDate, consultationType, diagnosis, prescribedTreatment));
+                consultations.add(new MedicalConsultation(consultationId, patientName, consultationDate, consultationType,
+                        diagnosis, prescribedTreatment, ids));
             }
 
             TableConsult.setItems(consultations);
@@ -483,10 +487,11 @@ public class MedConController implements Initializable {
                 = "SELECT p.prescription_id, "
                 + "       CONCAT(pt.first_name, ' ', pt.last_name) AS patient_name, "
                 + "       mc.consultation_type, mc.consultation_date, mc.diagnosis, "
-                + "       p.dosage, p.frequency, p.duration "
+                + "       p.dosage, p.frequency, p.duration, mc.date_added "
                 + "FROM PRESCRIPTION p "
                 + "JOIN MEDICAL_CONSULTATION mc ON p.consultation_id = mc.consultation_id "
-                + "JOIN PATIENTS pt ON mc.id = pt.id";
+                + "JOIN PATIENTS pt ON mc.id = pt.id "
+                + "ORDER BY mc.date_added DESC";
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/amedic", "root", ""); PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet resultSet = preparedStatement.executeQuery()) {
 
